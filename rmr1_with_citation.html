@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RM-R1: Reward Modeling as Reasoning</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; margin: 0; background: #fff; color: #333; }
+    header { background: linear-gradient(to right, #1f2937, #374151); color: #fff; padding: 4rem 2rem; text-align: center; }
+    header h1 { font-size: 3rem; font-weight: 700; margin-bottom: 1rem; }
+    header p { font-size: 1.2rem; color: #d1d5db; }
+    .container { max-width: 960px; margin: 0 auto; padding: 2rem 1rem; }
+    section { margin-bottom: 3rem; }
+    h2 { font-size: 2rem; border-left: 6px solid #3b82f6; padding-left: 1rem; margin-bottom: 1rem; }
+    .authors { font-size: 1rem; color: #555; margin-bottom: 1rem; }
+    .links a { display: inline-block; margin: 0.5rem 1rem 0.5rem 0; color: #3b82f6; text-decoration: none; font-weight: 600; }
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+    .card { background: #f3f4f6; border-radius: 8px; padding: 1.5rem; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+    .card strong { display: block; font-size: 1.1rem; margin-bottom: 0.5rem; color: #111827; }
+    footer { background: #f9fafb; text-align: center; padding: 2rem 1rem; font-size: 0.9rem; color: #6b7280; border-top: 1px solid #e5e7eb; }
+    table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; font-size: 0.9rem; }
+    th, td { padding: 0.4rem 0.5rem; border: 1px solid #ddd; text-align: left; }
+    th { background-color: #f3f4f6; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>RM-R1: Reward Modeling as Reasoning</h1>
+    <p>Reasoning-enhanced Reward Models with Structured Rubrics</p>
+  </header>
+  <div class="container">
+    <section>
+      <div class="authors" style="text-align:center; font-size: 1rem; margin-bottom: 1rem; line-height: 1.8;">
+        <strong style="color: #ef6c00; font-size: 1.2rem;">RM-R1 Team</strong><br>
+        Xiusi Chen<sup>1*</sup>, Gaotang Li<sup>1*</sup>, Ziqi Wang<sup>1*</sup>, Bowen Jin<sup>1</sup>, Cheng Qian<sup>1</sup>, Yu Wang<sup>2</sup>, Hongru Wang<sup>1</sup> <br> Yu Zhang<sup>3</sup>, Denghui Zhang<sup>4</sup>, Tong Zhang<sup>1</sup>, Hanghang Tong<sup>1</sup>, Heng Ji<sup>1</sup><br>
+        <span style="font-size: 0.9rem;">*Equal Contribution</span><br><br>
+        <span style="font-size: 1rem;">
+          <sup>1</sup>University of Illinois Urbana-Champaign<br>
+          <sup>2</sup>University of California, San Diego<br>
+          <sup>3</sup>Texas A&amp;M University<br>
+          <sup>4</sup>Stevens Institute of Technology
+        </span><br>
+        <span style="font-family: monospace; font-size: 1rem;">{xiusic, gaotang3, htong, hengji}@illinois.edu</span>
+      </div>
+      <div style="text-align: center; margin-top: 1rem;">
+        <a href="https://arxiv.org/abs/2505.02387" target="_blank" style="display:inline-block; margin:0.4rem; padding:0.6rem 1rem; background:#ef6c00; color:white; font-weight:600; border-radius:25px; text-decoration:none;">📄 Paper</a>
+        <a href="https://github.com/RM-R1-UIUC/RM-R1" target="_blank" style="display:inline-block; margin:0.4rem; padding:0.6rem 1rem; background:#111827; color:white; font-weight:600; border-radius:25px; text-decoration:none;">💻 Code</a>
+        <a href="https://huggingface.co/collections/gaotang/rm-r1-681128cdab932701cad844c8" target="_blank" style="display:inline-block; margin:0.4rem; padding:0.6rem 1rem; background:#facc15; color:#111827; font-weight:600; border-radius:25px; text-decoration:none;">📦 Models</a>
+        <a href="https://huggingface.co/collections/gaotang/rm-r1-681128cdab932701cad844c8" target="_blank" style="display:inline-block; margin:0.4rem; padding:0.6rem 1rem; background:#ff9800; color:white; font-weight:600; border-radius:25px; text-decoration:none;">🧑‍⚖️ Dataset</a>
+        <a href="#citation" style="display:inline-block; margin:0.4rem; padding:0.6rem 1rem; background:#6d28d9; color:white; font-weight:600; border-radius:25px; text-decoration:none;">📚 Bibtex</a>
+      </div>
+    </section>
+    <section>
+      <h2>Overview</h2>
+      <p>RM-R1 introduces a reasoning-centered approach to reward modeling through Chain-of-Rubrics (CoR). The model generates rubrics or intermediate solutions before judgment to enhance interpretability and achieve state-of-the-art accuracy on standard reward benchmarks.</p>
+      <div style="text-align:center; margin: 2rem 0;">
+        <div>
+          <img src="./rm-r1.png" alt="RM-R1 Framework" style="max-width:100%; border:1px solid #ddd; border-radius:8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
+          <p style="margin-top: 1rem; color: #4b5563; font-size: 0.9rem;">Figure 1: Overview of the RM-R1 framework</p>
+        </div>
+      </div>
+    </section>
+    <section>
+      <h2>Key Features</h2>
+      <ul>
+        <li>Structured rubric generation with reasoning traces</li>
+        <li>Two-phase training: distillation + RL with verifiable rewards</li>
+        <li>Superior performance compared to GPT-4o, Llama3.1-70B</li>
+        <li>Open-source 7B, 14B, and 32B models</li>
+      </ul>
+    </section>
+    <section>
+      <h2>Model Cards</h2>
+      <p style="margin-bottom: 1.5rem;">All our models and datasets are available on <a href="https://huggingface.co/collections/gaotang/rm-r1-681128cdab932701cad844c8" target="_blank" style="color: #3b82f6; text-decoration: none; font-weight: 600;">Hugging Face</a>.</p>
+      <div class="card-grid">
+        <div class="card">
+          <strong>RM-R1-Qwen-Instruct-7B</strong>
+          <!-- <p>Small, efficient model competitive across reasoning and safety domains.</p> -->
+        </div>
+        <div class="card">
+          <strong>RM-R1-Qwen-Instruct-14B</strong>
+          <!-- <p>Larger capacity model designed to improve reasoning generalization.</p> -->
+        </div>
+        <div class="card">
+          <strong>RM-R1-Qwen-Instruct-32B</strong>
+          <!-- <p>Best-in-class model that surpasses larger commercial systems.</p> -->
+        </div>
+        <div class="card">
+          <strong>RM-R1-DeepSeek-Distilled-Qwen-14B</strong>
+          <!-- <p>High performance with rich intermediate rationales and rubrics.</p> -->
+        </div>
+        <div class="card">
+          <strong>RM-R1-DeepSeek-Distilled-Qwen-7B</strong>
+          <!-- <p>Distilled variant of Qwen-7B, balances performance and cost efficiency.</p> -->
+        </div>
+        <div class="card">
+          <strong>RM-R1-DeepSeek-Distilled-Qwen-32B</strong>
+          <!-- <p>Top-tier performance on RewardBench and RM-Bench with interpretability.</p> -->
+        </div>
+      </div>
+    </section>
+    <section>
+      <h2>Benchmarks</h2>
+      <p>Evaluated on RewardBench, RM-Bench, and RMB. RM-R1 models consistently outperform larger counterparts with interpretable judgments and domain generalization.</p>
+<table>
+        <thead>
+          <tr>
+            <th>Models</th>
+            <th>RewardBench</th>
+            <th>RM-Bench</th>
+            <th>RMB</th>
+            <th>Average</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="5"><strong>ScalarRMs</strong></td></tr>
+          <tr><td>SteerLM-RM-70B</td><td>88.8</td><td>52.5</td><td>58.2</td><td>66.5</td></tr>
+          <tr><td>Eurus-RM-7b</td><td>82.8</td><td>65.9</td><td>68.3</td><td>72.3</td></tr>
+          <tr><td>Internlm2-20b-reward</td><td>90.2</td><td>68.3</td><td>62.9</td><td>73.6</td></tr>
+          <tr><td>Skywork-Reward-Gemma-2-27B</td><td>93.8</td><td>67.3</td><td>60.2</td><td>73.8</td></tr>
+          <tr><td>Internlm2-7b-reward</td><td>87.6</td><td>67.1</td><td>67.1</td><td>73.9</td></tr>
+          <tr><td>ArmoRM-Llama3-8B-v0.1</td><td>90.4</td><td>67.7</td><td>64.6</td><td>74.2</td></tr>
+          <tr><td>Nemotron-4-340B-Reward</td><td>92.0</td><td>69.5</td><td>69.9</td><td>77.1</td></tr>
+          <tr><td>Skywork-Reward-Llama-3.1-8B</td><td>92.5</td><td>70.1</td><td>69.3</td><td>77.5</td></tr>
+          <tr><td>INF-ORM-Llama3.1-70B</td><td><strong>95.1</strong></td><td>70.9</td><td>70.5</td><td>78.8</td></tr>
+
+          <tr><td colspan="5"><strong>GenRMs</strong></td></tr>
+          <tr><td>Claude-3-5-sonnet-20240620</td><td>84.2</td><td>61.0</td><td>70.6</td><td>71.9</td></tr>
+          <tr><td>Llama3.1-70B-Instruct</td><td>84.0</td><td>65.5</td><td>68.9</td><td>72.8</td></tr>
+          <tr><td>Gemini-1.5-pro</td><td>88.2</td><td>75.2</td><td>56.5</td><td>73.3</td></tr>
+          <tr><td>Skywork-Critic-Llama-3.1-70B</td><td>93.3</td><td>71.9</td><td>65.5</td><td>76.9</td></tr>
+          <tr><td>GPT-4o-0806</td><td>86.7</td><td>72.5</td><td><strong>73.8</strong></td><td>77.7</td></tr>
+
+          <tr><td colspan="5"><strong>ReasRMs</strong></td></tr>
+          <tr><td>JudgeLRM</td><td>75.2</td><td>64.7</td><td>53.1</td><td>64.3</td></tr>
+          <tr><td>DeepSeek-PairRM-27B</td><td>87.1</td><td>–</td><td>58.2</td><td>–</td></tr>
+          <tr><td>DeepSeek-GRM-27B-RFT</td><td>84.5</td><td>–</td><td>67.0</td><td>–</td></tr>
+          <tr><td>DeepSeek-GRM-27B</td><td>86.0</td><td>–</td><td>69.0</td><td>–</td></tr>
+          <tr><td>Self-taught-evaluator-llama3.1-70B</td><td>90.2</td><td>71.4</td><td>67.0</td><td>76.2</td></tr>
+
+          <tr><td colspan="5"><strong>Our Methods</strong></td></tr>
+          <tr><td>RM-R1-DeepSeek-Distilled-Qwen-7B</td><td>80.1</td><td>72.4</td><td>55.1</td><td>69.2</td></tr>
+          <tr><td>RM-R1-Qwen-Instruct-7B</td><td>85.2</td><td>70.2</td><td>66.4</td><td>73.9</td></tr>
+          <tr><td>RM-R1-Qwen-Instruct-14B</td><td>88.2</td><td>76.1</td><td>69.2</td><td>77.8</td></tr>
+          <tr><td>RM-R1-DeepSeek-Distilled-Qwen-14B</td><td>88.9</td><td>81.5</td><td>68.5</td><td>79.6</td></tr>
+          <tr><td>RM-R1-Qwen-Instruct-32B</td><td>91.4</td><td>79.1</td><td>73.0</td><td>81.2</td></tr>
+          <tr><td>RM-R1-DeepSeek-Distilled-Qwen-32B</td><td>90.9</td><td><strong>83.9</strong></td><td>69.8</td><td><strong>81.5</strong></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <div style="margin: 3rem 0;">
+      <h3 style="font-size:1.5rem; margin-bottom: 1rem;">Key Takeaways</h3>
+      <div style="background: #f8fafc; border-radius: 8px; box-shadow: 2px 2px 4px rgba(0,0,0,0.1); padding: 1rem 1.25rem; border-left: 5px solid #3b82f6;">
+        <strong style="font-size: 1.2rem; color: #1e40af;">⭐ Takeaway 1:</strong>
+        <p style="font-size: 1.1rem; line-height: 1.6; color: #334155;">Directly replicating reinforcement learning recipes from mathematical tasks is insufficient for training strong reasoning reward models. Explicit query categorization and targeted distillation of high-quality reasoning traces are both crucial for achieving robust and generalizable improvements.</p>
+      </div>
+      <div style="background: #f8fafc; border-radius: 8px; box-shadow: 2px 2px 4px rgba(0,0,0,0.1); padding: 1rem 1.25rem; border-left: 5px solid #3b82f6; margin-top: 1rem;">
+        <strong style="font-size: 1.2rem; color: #1e40af;">⭐ Takeaway 2:</strong>
+        <p style="font-size: 1.1rem; line-height: 1.6; color: #334155;">Scaling improves reward model performance: we observe a near-linear trend with both model size and inference-time compute. Larger models consistently benefit more from our reasoning-based training pipeline, and longer reasoning chains become increasingly effective under higher compute budgets.</p>
+      </div>
+      <div style="text-align:center; margin: 2rem 0;">
+        <img src="./scaling_effect.png" alt="Scaling effect of RM-R1" style="max-width:600px; width:100%; border:1px solid #ddd; border-radius:8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
+        <p style="margin-top: 1rem; color: #4b5563; font-size: 0.9rem;">
+          <b>Figure 4: Scaling effect of RM-R1.</b> (a) Larger models benefit more from reasoning training. (b) Longer reasoning chains improve RM performance.
+        </p>
+      </div>
+      <div style="background: #f8fafc; border-radius: 8px; box-shadow: 2px 2px 4px rgba(0,0,0,0.1); padding: 1rem 1.25rem; border-left: 5px solid #3b82f6; margin-top: 1rem;">
+        <strong style="font-size: 1.2rem; color: #1e40af;">⭐ Takeaway 3:</strong>
+        <p style="font-size: 1.1rem; line-height: 1.6; color: #334155;">Reasoning training substantially improves reward modeling. It not only enables better generalization across tasks but also provides consistent gains even under limited data scenarios compared to direct-answer SFT approaches.</p>
+      </div>
+      <div style="text-align:center; margin: 2rem 0;">
+        <table style="margin: 0 auto; border-collapse: collapse; font-size: 1rem; min-width: 420px;">
+          <thead>
+            <tr style="background: #f3f4f6;">
+              <th style="border: 1px solid #bbb; padding: 0.4rem 0.7rem;">Method</th>
+              <th style="border: 1px solid #bbb; padding: 0.4rem 0.7rem;">RewardBench</th>
+              <th style="border: 1px solid #bbb; padding: 0.4rem 0.7rem;">RM-Bench</th>
+              <th style="border: 1px solid #bbb; padding: 0.4rem 0.7rem;">RMB</th>
+              <th style="border: 1px solid #bbb; padding: 0.4rem 0.7rem;">Avg.</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td colspan="5" style="text-align:left; font-weight:bold; background:#fafafa; border: 1px solid #bbb;">Train on Full Data</td></tr>
+            <tr><td style="border: 1px solid #bbb; padding: 0.4rem 0.7rem;">Instruct + <b>SFT</b></td><td style="border: 1px solid #bbb;">90.9</td><td style="border: 1px solid #bbb;">75.4</td><td style="border: 1px solid #bbb;">65.9</td><td style="border: 1px solid #bbb;">77.4</td></tr>
+            <tr><td style="border: 1px solid #bbb; padding: 0.4rem 0.7rem;">Instruct + <b>Distilled</b> + SFT</td><td style="border: 1px solid #bbb;">91.2</td><td style="border: 1px solid #bbb;">76.7</td><td style="border: 1px solid #bbb;">65.4</td><td style="border: 1px solid #bbb;">77.8</td></tr>
+            <tr><td style="border: 1px solid #bbb; padding: 0.4rem 0.7rem;">RM-R1 *</td><td style="border: 1px solid #bbb;">91.4</td><td style="border: 1px solid #bbb;">79.1</td><td style="border: 1px solid #bbb;">73.0</td><td style="border: 1px solid #bbb;">81.2</td></tr>
+            <tr><td colspan="5" style="text-align:left; font-weight:bold; background:#fafafa; border: 1px solid #bbb;">Train on 9k (Distillation) Data</td></tr>
+            <tr><td style="border: 1px solid #bbb; padding: 0.4rem 0.7rem;">Instruct + <b>SFT</b></td><td style="border: 1px solid #bbb;">88.8</td><td style="border: 1px solid #bbb;">74.8</td><td style="border: 1px solid #bbb;">66.9</td><td style="border: 1px solid #bbb;">76.6</td></tr>
+            <tr><td style="border: 1px solid #bbb; padding: 0.4rem 0.7rem;">Instruct + <b>Distilled</b> *</td><td style="border: 1px solid #bbb;">89.0</td><td style="border: 1px solid #bbb;">76.3</td><td style="border: 1px solid #bbb;">72.0</td><td style="border: 1px solid #bbb;">79.2</td></tr>
+          </tbody>
+        </table>
+        <p style="margin-top: 1rem; color: #4b5563; font-size: 0.9rem; max-width: 700px; margin-left:auto; margin-right:auto;">
+          <b>Table 3: Comparison of reasoning-based training versus SFT across benchmarks.</b> * indicates reasoning-based methods. Reasoning training consistently yields better performance.
+        </p>
+      </div>
+    </div>
+    <section style="background: linear-gradient(to right, #f3e8ff, #e0f2fe); padding: 0.5rem 0.5rem 1.5rem 0.5rem; text-align: center;">
+      <h2 style="font-size: 2rem; color: #1e293b; margin-bottom: 1rem; border-left: none; padding-left: 0;">Citation</h2>
+      <p style="font-size: 1rem; margin-bottom: 1rem; color: #374151;">If you find RM-R1 useful in your research, we would appreciate it if you consider citing our work:</p>
+      <div style="background: #ffffff; padding: 0.5rem 1rem; margin: 0 auto; max-width: 720px; text-align: left; border-radius: 8px; font-family: monospace; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+<pre style="white-space: pre-wrap; font-size: 0.9rem;">
+@misc{chen2025rmr1,
+  title={RM-R1: Reward Modeling as Reasoning},
+  author={Xiusi Chen and Gaotang Li and Ziqi Wang and Bowen Jin and Cheng Qian and Yu Wang and Hongru Wang and Yu Zhang and Denghui Zhang and Tong Zhang and Hanghang Tong and Heng Ji},
+  year={2025},
+  eprint={2505.02387},
+  archivePrefix={arXiv},
+  primaryClass={cs.CL},
+  url={https://arxiv.org/abs/2505.02387}
+}
+</pre>
+      </div>
+    </section>
+  </div>
+  <footer>© 2025 RM-R1 Team.</footer>
+</body>
+</html>
